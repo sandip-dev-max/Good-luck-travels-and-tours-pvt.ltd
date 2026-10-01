@@ -79,22 +79,26 @@ export function Footer() {
               <ul className="mt-5 grid gap-3 text-sm text-white/80">
                 <li><a href={`tel:${company.phones[0].replace(/\s/g, '')}`} className="flex items-center gap-2.5 hover:text-gold"><Phone size={15} className="text-gold" />{company.phones[0]}</a></li>
                 <li><a href={`tel:${company.phones[1].replace(/\s/g, '')}`} className="flex items-center gap-2.5 hover:text-gold"><Phone size={15} className="text-gold" />{company.phones[1]}</a></li>
-                <li><a href={`mailto:${company.email}`} className="flex items-start gap-2.5 break-all hover:text-gold"><Mail size={15} className="mt-0.5 shrink-0 text-gold" />{company.email}</a></li>
+                <li><a href={`mailto:${company.email}`} className="flex items-center gap-2.5 whitespace-nowrap text-xs hover:text-gold"><Mail size={15} className="shrink-0 text-gold" />{company.email}</a></li>
               </ul>
             </div>
           </div>
 
           <div className="grid gap-5 border-t border-white/10 pt-8 text-sm text-white/65 md:grid-cols-3">
-            <div className="flex items-start gap-2.5"><MapPin size={15} className="mt-0.5 shrink-0 text-gold" /><span><strong className="font-semibold text-white">Tinkune</strong><br />Kathmandu-32, Nepal</span></div>
-            <div className="flex items-start gap-2.5"><MapPin size={15} className="mt-0.5 shrink-0 text-gold" /><span><strong className="font-semibold text-white">Sinamangal</strong><br />Kathmandu, Nepal</span></div>
+            {company.locations.map((location) => (
+              <a key={location.label} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`} target="_blank" rel="noreferrer" className="flex items-start gap-2.5 transition hover:text-gold">
+                <MapPin size={15} className="mt-0.5 shrink-0 text-gold" />
+                <span><strong className="font-semibold text-white">{location.label}</strong><br />{location.address}</span>
+              </a>
+            ))}
             <div className="flex items-center gap-2.5 md:justify-end"><ShieldCheck size={15} className="text-gold" /> Human support · Clear travel guidance</div>
           </div>
         </div>
 
         <div className="border-t border-white/10 bg-black/15">
-          <div className="container-luxury flex flex-col justify-between gap-2 py-5 text-xs text-white/55 sm:flex-row">
+          <div className="container-luxury flex flex-col items-center gap-2 py-5 text-center text-xs text-white/55">
             <span>© {new Date().getFullYear()} {company.name} All rights reserved.</span>
-            <span>Good journeys begin with good planning.</span>
+            <span>Designed &amp; developed with ❤️ by <a href="https://sandipbhatta.com.np" target="_blank" rel="noreferrer" className="transition hover:text-gold">sandipbhatta.com.np</a></span>
           </div>
         </div>
       </div>
