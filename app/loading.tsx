@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="grid min-h-[70vh] place-items-center bg-paper pt-24"><div className="text-center"><div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-mist border-t-sea"/><p className="mt-4 text-xs font-semibold text-muted">Preparing your journey</p></div></main>}

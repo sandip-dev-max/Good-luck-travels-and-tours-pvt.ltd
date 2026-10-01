@@ -1,0 +1,5 @@
+'use client'
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { RefreshCcw, MessageCircle } from 'lucide-react'
+export default function Error({error,reset}:{error:Error & {digest?:string};reset:()=>void}){useEffect(()=>{console.error(error)},[error]);return <main className="grid min-h-[70vh] place-items-center bg-paper px-6 pt-24"><div className="max-w-xl text-center"><div className="eyebrow text-sea">Something went wrong</div><h1 className="mt-4 text-5xl font-semibold tracking-[-.07em] text-navy">Let’s get your journey back on track.</h1><p className="mt-5 text-sm leading-7 text-muted">The page could not load correctly. You can try again or contact the Good Luck travel desk directly.</p><div className="mt-7 flex flex-wrap justify-center gap-3"><button onClick={reset} className="btn-primary"><RefreshCcw size={15}/> Try again</button><Link href="/" className="btn-soft">Back home</Link><a href="https://wa.me/9779816800052" target="_blank" rel="noreferrer" className="btn-soft"><MessageCircle size={15}/> WhatsApp</a></div></div></main>}
