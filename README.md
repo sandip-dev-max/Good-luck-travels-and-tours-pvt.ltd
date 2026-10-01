@@ -1,60 +1,77 @@
-# Good Luck International Travels & Tours — Production UI
+# Good Luck International Travels & Tours — Production Website
 
-Premium Next.js 15 + TypeScript + Tailwind travel agency website for Good Luck International Travels & Tours PVT. LTD.
+A modern, premium, and responsive travel & tourism website for **Good Luck International Travels and Tours PVT. LTD.**, built with Next.js, TypeScript, Tailwind CSS, and Framer Motion.
 
-## Design direction
-- Minimal, classic, premium blue-led visual system
-- Bricolage Grotesque (display) + Figtree (body)
-- One palette everywhere, taken from the hero: navy `#06152e`, sea blue `#1c6a98`, mist `#d5e8f2`, and gold `#f4b73f` as the single accent (tokens in `tailwind.config.ts` and `app/globals.css`)
-- Aircraft-led above-the-fold hero designed to keep core content visible without scrolling on desktop
-- Realistic travel photography with editorial cards
-- WhatsApp-first enquiry UX instead of fake online booking/search behaviour
-- Responsive navigation, mobile menu and floating WhatsApp CTA
-- Founder-led About page with Aatif Aslam portrait
-- Tinkune + Sinamangal location information
+The website is designed around a sophisticated travel-brand experience that combines cinematic imagery, editorial layouts, elegant typography, subtle glassmorphism, smooth micro-interactions, and a clean premium UI.
 
-## Pages
-- Home
-- Destinations + destination details
-- Tours + tour details
-- Flights
-- Hotels
-- Visa assistance
-- About
-- Contact
-- Blog + article details
-- Privacy Policy
-- Terms of Service
-- Loading, 404 and error states
-- Sitemap + robots metadata
+> **Travel Beyond Boundaries. Explore Without Limits.**
 
-## WhatsApp
-Primary enquiry number: +977 981-680-0052
+---
 
-The homepage service selector, contact form and major package CTAs open a pre-filled WhatsApp conversation. No fake search results or pretend booking API is used.
+## ✦ About the Project
 
-## Local brand assets
-- `public/images/jet-top.webp` (hero jet, transparent)
-- `public/images/good-luck-logo.jpeg`
-- `public/images/aatif-aslam.jpeg`
-- `app/icon.jpeg`
+Good Luck International Travels and Tours is a professional travel agency based in Tinkune, Kathmandu, providing personalized travel solutions for individuals, families, and businesses.
 
-## Run locally
-```bash
-npm install
-npm run dev
-```
+The website serves as the company's digital presence and showcases its travel services, destinations, tour packages, flight assistance, hotel reservations, visa assistance, and travel planning services.
 
-## Production build
-```bash
-npm run build
-npm start
-```
+The experience is intentionally designed to feel more like a premium international travel brand than a traditional travel-agency template.
 
-The package intentionally excludes `node_modules` and `.next`; install dependencies on the deployment machine before building.
+---
 
-## Production checklist
-- Add real social profile URLs to `company.socials` in `data/site.ts`; the footer shows icons only when entries exist.
-- Connect any future booking/CRM/email service only when the business is ready; current CTAs intentionally use WhatsApp.
-- Verify `goodluckintl.com` and update metadata if the canonical production domain changes.
-- Review legal/privacy text with the company's preferred legal adviser before publication.
+## 🎨 Design Direction
+
+The website follows a modern, classic, and premium visual identity.
+
+### Core Design Principles
+
+- Minimal and sophisticated UI
+- Premium blue-led visual system
+- Editorial-inspired layouts
+- Cinematic travel photography
+- Generous whitespace
+- Strong visual hierarchy
+- Elegant typography
+- Subtle glassmorphism
+- Smooth micro-interactions
+- Responsive layouts across all devices
+- Accessible and user-friendly navigation
+- Premium travel-brand aesthetic
+- No unnecessary visual clutter
+
+### Typography
+
+- **Bricolage Grotesque** — Display / Headings
+- **Figtree** — Body / UI / Navigation
+
+### Color System
+
+The visual system is derived from the brand's travel-focused identity:
+
+- **Deep Navy:** `#06152E`
+- **Sea Blue:** `#1C6A98`
+- **Mist:** `#D5E8F2`
+- **Gold Accent:** `#F4B73F`
+- **White:** `#FFFFFF`
+
+Gold is intentionally used as a restrained accent rather than a dominant color.
+
+---
+
+## ✈️ Hero Experience
+
+The above-the-fold experience is designed around a cinematic aircraft-led hero section.
+
+Key characteristics:
+
+- Transparent aircraft imagery
+- Strong travel-focused visual composition
+- Premium typography
+- Clear primary CTA
+- Responsive layout
+- Subtle motion and transitions
+- Core content remains visible without unnecessary scrolling on desktop
+
+The hero uses:
+
+```text
+public/images/jet-top.webp
