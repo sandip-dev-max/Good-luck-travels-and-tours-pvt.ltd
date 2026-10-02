@@ -8,8 +8,6 @@ import { TourCard } from '@/components/tours/TourCard'
 import { Reveal } from '@/components/shared/Reveal'
 import { waLink } from '@/lib/whatsapp'
 
-const travel = 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1500&q=85'
-
 const trust = [
   ['Best value', 'Smart travel planning', WalletCards],
   ['Human support', 'Real people, clear answers', Headphones],
@@ -22,6 +20,45 @@ const reasons = [
   ['02', 'Support when it matters', 'Ask a real travel specialist when plans change or questions come up.'],
   ['03', 'Details, clearly handled', 'From bookings to documentation, every step has a clear next action.'],
   ['04', 'Journeys with character', 'Choose from classic destinations or build something personal.'],
+]
+
+const faqs = [
+  {
+    question: 'How early should I book my trip?',
+    answer: 'For international trips, especially during peak seasons, it is best to book 2 to 6 months in advance. This gives you more flight and hotel options and keeps visa and planning steps smoother.',
+  },
+  {
+    question: 'Can I customize a package to fit my budget?',
+    answer: 'Yes. We regularly adjust destinations, hotel categories, duration and activities to match your budget and travel style while still keeping the itinerary practical and comfortable.',
+  },
+  {
+    question: 'Do you help with visa and documentation?',
+    answer: 'Absolutely. We provide guidance on the documents needed, help you understand the process and keep the steps organized so you know exactly what to prepare before departure.',
+  },
+  {
+    question: 'Is support available while I am travelling?',
+    answer: 'Yes. We stay reachable during the planning phase and can help with practical updates or travel support when needed, so you are not left figuring things out alone.',
+  },
+  {
+    question: 'Can I book flights, hotels and tours together?',
+    answer: 'Yes. We can coordinate complete trip planning, including flights, accommodation, transfers and guided experiences, so everything feels connected from start to finish.',
+  },
+]
+
+const startingPrices = [
+  { country: 'Thailand', packages: 22, price: 'NRs 28,000' },
+  { country: 'Vietnam', packages: 11, price: 'NRs 40,000' },
+  { country: 'Indonesia / Bali', packages: 10, price: 'NRs 39,000' },
+  { country: 'Maldives', packages: 7, price: 'NRs 55,000' },
+  { country: 'China', packages: 10, price: 'NRs 1,04,500' },
+  { country: 'Sri Lanka', packages: 13, price: 'NRs 61,500' },
+  { country: 'Malaysia', packages: 9, price: 'NRs 59,800' },
+  { country: 'Singapore', packages: 8, price: 'NRs 77,000' },
+  { country: 'Kenya', packages: 2, price: 'NRs 4,20,000' },
+  { country: 'India', packages: 16, price: 'NRs 28,000' },
+  { country: 'Dubai', packages: 3, price: 'On request' },
+  { country: 'Nepal', packages: 7, price: 'NRs 31,000' },
+  { country: 'Philippines', packages: 6, price: 'On request' },
 ]
 
 function Heading({ kicker, children, href, cta }: { kicker: string; children: React.ReactNode; href?: string; cta?: string }) {
@@ -91,35 +128,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* packages */}
-      <section className="container-luxury py-20 sm:py-24">
-        <Reveal><Heading kicker="Featured packages" href="/tours" cta="See all packages">Go somewhere <span className="text-gradient">beautiful.</span></Heading></Reveal>
-        <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {tours.slice(0, 3).map((t, i) => <Reveal key={t.slug} delay={i * 0.05}><TourCard item={t} /></Reveal>)}
-        </div>
-      </section>
-
-      {/* WhatsApp band */}
-      <section className="container-luxury pb-20 sm:pb-24">
-        <div className="on-dark relative isolate overflow-hidden rounded-[30px] bg-gradient-to-br from-sea via-navy-2 to-navy">
-          <div className="grid-fade absolute inset-0 -z-10" />
-          <div className="grid lg:grid-cols-[.95fr_1.05fr]">
-            <div className="relative min-h-[320px]">
-              <Image src={travel} alt="Traveller overlooking a destination" fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-navy/60" />
-            </div>
-            <div className="relative flex items-center p-8 sm:p-12">
-              <div className="text-white">
-                <span className="eyebrow">One conversation can start it</span>
-                <h2 className="mt-4 max-w-xl text-4xl leading-[1.02] sm:text-6xl">Tell us where you want to <span className="text-gradient">go.</span></h2>
-                <p className="mt-5 max-w-lg text-base leading-7 text-white/75">Send your destination, dates and group size on WhatsApp. We will help you explore the options.</p>
-                <a href={waLink()} target="_blank" rel="noreferrer" className="btn-gold mt-7"><MessageCircle size={17} /> Chat on WhatsApp</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* journal */}
       <section className="bg-cloud py-20 sm:py-24">
         <div className="container-luxury">
@@ -155,19 +163,89 @@ export default function Home() {
 
       {/* testimonials */}
       <section className="container-luxury py-20 sm:py-24">
-        <div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr] lg:items-end">
-          <div>
-            <span className="section-kicker">Traveller notes</span>
-            <h2 className="mt-4 text-4xl leading-[1.02] text-navy sm:text-6xl">Good planning feels <span className="text-gradient">personal.</span></h2>
+        <div className="mb-8">
+          <span className="section-kicker">Traveller stories</span>
+          <h2 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-navy sm:text-5xl">The trips they’ll never forget</h2>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-[#5d6976]">Real reviews from travellers we’ve sent across Asia and beyond, verified on Google.</p>
+        </div>
+        <div className="overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="grid min-w-[980px] grid-flow-col gap-5 md:min-w-[1200px]">
+            {testimonials.map((t, index) => {
+              const initials = t.name
+                .split(' ')
+                .map((part) => part[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase()
+
+              return (
+                <figure key={t.name} className="flex h-[260px] w-[320px] flex-col justify-between rounded-[28px] border border-[#dfe7ee] bg-[#f4f6f8] p-5 shadow-[0_8px_24px_rgba(16,28,40,0.04)] sm:w-[360px] sm:p-6">
+                  <div className="flex gap-1 text-[#f4b73f]" aria-label="5 out of 5 stars">
+                    {Array.from({ length: 5 }).map((_, j) => <Star key={j} size={18} fill="currentColor" />)}
+                  </div>
+
+                  <blockquote className="text-[1.02rem] leading-[1.8rem] text-[#1b2d3d] sm:text-[1.15rem]">
+                    “{t.quote.length > 130 && index === 0 ? `${t.quote.slice(0, 120)}...` : t.quote}”
+                  </blockquote>
+
+                  <figcaption className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#d5e9ff] via-[#9ec5ff] to-[#5d8adb] text-sm font-bold text-white shadow-sm">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate text-[1.05rem] font-semibold text-[#1d2a37]">{t.name}</div>
+                        <div className="mt-1 truncate text-sm text-[#5d6976]">{t.meta}</div>
+                      </div>
+                    </div>
+
+                    <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-white shadow-sm ring-1 ring-[#dfe7ee]">
+                      <Image src="/review/googlelogo.png" alt="Google logo" width={40} height={40} className="h-full w-full object-contain" />
+                    </div>
+                  </figcaption>
+                </figure>
+              )
+            })}
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <figure key={t.name} className="rounded-[22px] border border-line bg-white p-6 shadow-card">
-                <div className="flex gap-1 text-gold" aria-label="5 out of 5 stars">{Array.from({ length: 5 }).map((_, j) => <Star key={j} size={14} fill="currentColor" />)}</div>
-                <blockquote className="mt-5 text-sm leading-6 text-ink-2">“{t.quote}”</blockquote>
-                <figcaption className="mt-6 border-t border-line pt-4"><div className="text-sm font-semibold text-navy">{t.name}</div><div className="mt-1 text-xs text-subtle">{t.meta}</div></figcaption>
-              </figure>
-            ))}
+        </div>
+      </section>
+
+      <section className="bg-[#f6f2e8] py-20 sm:py-24">
+        <div className="container-luxury">
+          <div className="rounded-[30px] border border-[#f0e3b8] bg-[#fffdf9] p-6 shadow-[0_14px_40px_rgba(122,96,18,0.08)] sm:p-8 lg:p-12">
+            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+              <div className="flex flex-col justify-between">
+                <div>
+                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#f1e2a7] bg-[#fff6d8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8a5a00]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#f4b73f]" />
+                    Let’s make it easy
+                  </div>
+                  <h2 className="max-w-[320px] text-4xl font-semibold leading-[0.95] tracking-[-0.05em] text-[#1a1a1d] sm:text-5xl">Frequently asked questions</h2>
+                </div>
+
+                <div className="mt-8 rounded-[24px] border border-[#f0e4ba] bg-[#fff8e9] p-5">
+                  <h3 className="text-[1.85rem] font-semibold tracking-[-0.04em] text-[#1b1d22]">Still have a questions?</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#5f6470]">Can’t find the answer to your question? Send us an email and we’ll get back to you as soon as possible.</p>
+                  <a href="mailto:info@goodlucktravels.com.np" className="mt-5 inline-flex items-center justify-center rounded-full bg-[#f4b73f] px-5 py-3 text-sm font-semibold text-[#1b1404] shadow-[0_10px_24px_rgba(244,183,63,0.32)] transition hover:bg-[#f0b037]">
+                    Send email
+                  </a>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {faqs.map((item, index) => (
+                  <details key={item.question} open={index === 0} className="group rounded-[18px] border border-[#efe7d8] bg-[#f7f7f4] p-4 text-left transition hover:border-[#ead7a6] sm:p-5">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-[#1b1d22] sm:text-lg">
+                      <span className="pr-3">{item.question}</span>
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f3ece0] text-xl font-light text-[#8a5a00] transition-transform duration-200 group-open:rotate-45">
+                        +
+                      </span>
+                    </summary>
+                    <p className="mt-4 max-w-[52ch] text-sm leading-7 text-[#5f6470]">{item.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
