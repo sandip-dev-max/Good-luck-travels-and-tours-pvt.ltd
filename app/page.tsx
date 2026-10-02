@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Globe2, Headphones, MessageCircle, ShieldCheck, Star, WalletCards } from 'lucide-react'
@@ -7,6 +8,32 @@ import { DestinationCard } from '@/components/destinations/DestinationCard'
 import { TourCard } from '@/components/tours/TourCard'
 import { Reveal } from '@/components/shared/Reveal'
 import { waLink } from '@/lib/whatsapp'
+
+export const metadata: Metadata = {
+  title: 'Best Travel Agency in Kathmandu, Nepal',
+  description: 'Good Luck International Travels & Tours is a trusted travel agency in Kathmandu, Nepal offering flights, hotel booking, holiday packages, visa assistance and custom tours across Nepal and international destinations.',
+  alternates: { canonical: '/' },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TravelAgency',
+  name: 'Good Luck International Travels & Tours',
+  alternateName: 'Good Luck Travels',
+  description: 'Trusted travel agency in Kathmandu, Nepal specializing in flights, holiday packages, hotel bookings, visa assistance, and custom tours.',
+  url: 'https://goodluckintl.com',
+  telephone: '+977 9816800052',
+  email: 'goodluckinternationaltravels49@gmail.com',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Sinamangal, Kathmandu',
+    addressLocality: 'Kathmandu',
+    addressCountry: 'NP',
+  },
+  areaServed: ['Kathmandu', 'Nepal', 'Worldwide'],
+  sameAs: ['https://goodluckintl.com'],
+  knowsAbout: ['Flights', 'Hotels', 'Holiday Packages', 'Visa Assistance', 'Tour Packages'],
+}
 
 const trust = [
   ['Best value', 'Smart travel planning', WalletCards],
@@ -76,6 +103,7 @@ function Heading({ kicker, children, href, cta }: { kicker: string; children: Re
 export default function Home() {
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Hero />
 
       {/* trust strip */}

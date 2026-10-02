@@ -46,11 +46,7 @@ export function Navbar() {
         }`}
       >
         <Link href="/" className="flex items-center gap-2.5 px-1" aria-label="Good Luck International Travels & Tours — home">
-          <Image src="/images/good-luck-logo.jpeg" alt="" width={44} height={44} className="h-11 w-11 rounded-full object-cover ring-2 ring-gold/70" priority />
-          <span className="leading-none">
-            <span className="block font-display text-[20px] font-semibold tracking-tight text-navy">Good Luck</span>
-            <span className="mt-1 block text-[10px] font-medium tracking-wide text-subtle">International Travels &amp; Tours</span>
-          </span>
+          <Image src="/images/good-luck-navbar.png" alt="Good Luck logo" width={240} height={96} className="h-12 w-auto object-contain sm:h-14" priority unoptimized />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-0.5 lg:flex">

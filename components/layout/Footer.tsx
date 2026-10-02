@@ -47,11 +47,7 @@ export function Footer() {
           <div className="grid gap-10 py-12 lg:grid-cols-[1.3fr_.7fr_.7fr_1fr]">
             <div>
               <Link href="/" className="flex items-center gap-3">
-                <Image src="/images/good-luck-logo.jpeg" alt="Good Luck logo" width={56} height={56} className="h-14 w-14 rounded-full object-cover ring-2 ring-gold/70" />
-                <span className="leading-none">
-                  <span className="block font-display text-2xl font-semibold tracking-tight">Good Luck</span>
-                  <span className="mt-1.5 block text-[11px] text-white/55">International Travels &amp; Tours</span>
-                </span>
+                <Image src="/images/good-luck-footer.png" alt="Good Luck logo" width={240} height={92} className="h-14 w-auto object-contain" unoptimized />
               </Link>
               <p className="mt-5 max-w-md text-sm leading-7 text-white/65">
                 Flights, hotels, holiday packages and visa guidance, arranged by people who reply the same day, from Kathmandu to the world.
