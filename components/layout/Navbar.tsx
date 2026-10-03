@@ -21,12 +21,36 @@ export function Navbar() {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [footerVisible, setFooterVisible] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  useEffect(() => {
+    const footer = document.querySelector('footer')
+    if (!footer) return
+
+    const mobile = window.matchMedia('(max-width: 639px)')
+    const observer = new IntersectionObserver(([entry]) => {
+      setFooterVisible(mobile.matches && entry.isIntersecting)
+    })
+    const update = () => {
+      if (mobile.matches) observer.observe(footer)
+      else {
+        observer.unobserve(footer)
+        setFooterVisible(false)
+      }
+    }
+
+    update()
+    mobile.addEventListener('change', update)
+    return () => {
+      mobile.removeEventListener('change', update)
+      observer.disconnect()
+    }
   }, [])
 
   // close the mobile menu on navigation, lock page scroll while it is open
@@ -39,7 +63,7 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 px-3 transition-all sm:px-5 ${scrolled ? 'pt-2.5' : 'pt-4'}`}>
+    <header className={`fixed inset-x-0 top-0 z-50 px-3 transition-all sm:px-5 ${scrolled ? 'pt-2.5' : 'pt-4'} ${footerVisible ? '-translate-y-full opacity-0 pointer-events-none' : ''}`}>
       <div
         className={`mx-auto flex max-w-[1360px] items-center justify-between rounded-[22px] border px-2.5 py-2 backdrop-blur-xl transition-all ${
           scrolled ? 'border-line bg-white/95 shadow-soft' : 'border-white/80 bg-white/90 shadow-card'

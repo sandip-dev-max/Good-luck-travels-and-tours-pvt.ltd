@@ -26,8 +26,8 @@ function Col({ title, items }: { title: string; items: string[][] }) {
 
 export function Footer() {
   return (
-    <footer className="mt-8 px-3 pb-3 sm:px-5 sm:pb-5">
-      <div className="on-dark relative isolate overflow-hidden rounded-[28px] bg-gradient-to-b from-navy via-navy-2 to-[#14376b] text-white sm:rounded-[36px]">
+    <footer className="mt-8 px-0 pb-0 sm:px-5 sm:pb-5">
+      <div className="on-dark relative isolate overflow-hidden rounded-none bg-gradient-to-b from-navy via-navy-2 to-[#14376b] text-white sm:rounded-[36px]">
         <div className="grid-fade absolute inset-0 -z-10" />
         <div className="absolute -right-24 -top-24 -z-10 h-80 w-80 rounded-full bg-sky/25 blur-3xl" />
         <div className="absolute -bottom-32 -left-24 -z-10 h-72 w-72 rounded-full bg-gold/10 blur-3xl" />

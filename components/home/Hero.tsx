@@ -5,8 +5,9 @@ import { ArrowUpRight, Minus, Plus, Users } from 'lucide-react'
 import { waLink } from '@/lib/whatsapp'
 
 /**
- * Put a transparent (background removed), top-down (nose up) jet PNG at /public/images/jet-top.webp.
- * Until it exists, a drawn top-view jet is shown instead.
+ * Transparent (alpha) top-down jet, nose pointing UP.
+ * Export as WebP/PNG with a real alpha channel (no white box), ~1600px wide.
+ * Until it exists, the drawn fallback jet is shown.
  */
 const JET_SRC = '/images/jet-top.webp'
 
@@ -41,6 +42,7 @@ const input = 'w-full bg-transparent text-sm font-medium text-slate-900 outline-
 const clamp = (v: number, min = 0, max = 1) => Math.min(max, Math.max(min, v))
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+const smooth = (t: number) => t * t * (3 - 2 * t)
 
 export function Hero() {
   const [from, setFrom] = useState('Kathmandu (KTM)')
@@ -58,92 +60,106 @@ export function Hero() {
   const copyRef = useRef<HTMLDivElement>(null)
 
   /**
-   * Scroll loop: no React state, no re-render per scroll event.
+   * Scroll loop (no React state, no re-render per frame).
    * - Target progress is read from scroll position.
-   * - Displayed progress is lerped toward the target every frame (the "smooth" feel).
-   * - Everything is written as transform/opacity only (GPU compositor, no layout).
+   * - Displayed progress eases toward it with TIME-BASED damping, so it feels
+   *   identical on 60Hz, 120Hz and when frames drop (the old fixed 0.16 lerp didn't).
+   * - Only transform/opacity are written. Nodes are cached once.
+   * - Loop sleeps when settled and when the hero is off-screen.
    */
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const section = sectionRef.current
+    const jet = jetRef.current
+    const left = leftRef.current
+    const right = rightRef.current
+    const cloud = cloudRef.current
+    const bar = barRef.current
+    const copy = copyRef.current
+    if (!section) return
+
+    const reveals = copy ? Array.from(copy.querySelectorAll<HTMLElement>('[data-reveal]')) : []
 
     let target = 0
     let current = 0
     let raf = 0
     let running = false
+    let visible = true
+    let last = 0
     let vh = window.innerHeight
     let barTravel = 0
-    let runway = 1 // px of scroll the pinned hero actually lasts
+    let runway = 1
+    let sectionTop = 0 // document-space top, so scroll reads never force layout
+    let copyOn = false
 
     const measure = () => {
       vh = window.innerHeight
-      // Bar rides from its resting spot near the bottom up to the top of the card.
-      const card = barRef.current?.parentElement
-      barTravel = (card?.clientHeight ?? vh) * 0.785
-      // The pinned distance = section height - sticky height. The animation is mapped to
-      // THIS, so it finishes right as the hero unpins (no dead "stuck" scroll at the end).
-      const section = sectionRef.current
-      const sticky = section?.firstElementChild as HTMLElement | null
-      runway = Math.max((section?.offsetHeight ?? 0) - (sticky?.offsetHeight ?? vh), 1)
+      const card = bar?.parentElement
+      barTravel = (card?.clientHeight ?? vh) * 0.755
+      const sticky = section.firstElementChild as HTMLElement | null
+      runway = Math.max(section.offsetHeight - (sticky?.offsetHeight ?? vh), 1)
+      sectionTop = section.getBoundingClientRect().top + window.scrollY
     }
 
     const readTarget = () => {
-      const section = sectionRef.current
-      if (!section) return
-      const top = section.getBoundingClientRect().top
-      // Finish at 88% of the runway so the end state is reached just before unpinning.
-      target = clamp(-top / (runway * 0.88))
+      target = clamp((window.scrollY - sectionTop) / (runway * 0.88))
     }
 
     const apply = (p: number) => {
-      const jetY = -50 - easeInOut(p) * 58
-      const jetScale = 1 + p * 0.15
-      const jetOpacity = clamp(1 - p / 0.52)
+      /**
+       * Flight path: the jet climbs away from camera, drifts slightly right,
+       * banks into the turn and straightens out, and shrinks a touch at the very end
+       * as if it is leaving. Rotation is a bell curve so it rolls in and back out.
+       */
+      const climb = easeInOut(p)
+      // Straight, steady climb: no drift, no bank. Linear-ish so it never speeds up or stalls.
+      const jetY = -46 - (p * 0.85 + climb * 0.15) * 112 // % of own height
+      const jetScale = 1 + p * 0.1
+      const jetOpacity = clamp(1 - (p - 0.78) / 0.22)
 
       const sp = easeOut(clamp(p / 0.3))
-      const leftO = clamp(1 - p / 0.28)
-
-      const cloudY = 100 - easeInOut(p) * 100
-
+      const textO = clamp(1 - p / 0.28)
+      const cloudY = 100 - climb * 100
       const barY = -easeInOut(clamp(p / 0.62)) * barTravel
+      const copyP = clamp((p - 0.42) / 0.38)
 
-      // Second scene: each piece (badge, 2 headline lines, paragraph, buttons) reveals in turn.
-      const copyP = clamp((p - 0.5) / 0.4)
-      if (jetRef.current) {
-        jetRef.current.style.transform = `translate3d(-50%, ${jetY}%, 0) scale(${jetScale})`
-        jetRef.current.style.opacity = String(jetOpacity)
+      if (jet) {
+        jet.style.transform = `translate3d(-50%, ${jetY}%, 0) scale(${jetScale})`
+        jet.style.opacity = String(jetOpacity)
       }
-      if (leftRef.current) {
-        leftRef.current.style.transform = `translate3d(${-22 * sp}px, 0, 0)`
-        leftRef.current.style.opacity = String(leftO)
+      if (left) {
+        left.style.transform = `translate3d(${-26 * sp}px, 0, 0)`
+        left.style.opacity = String(textO)
       }
-      if (rightRef.current) {
-        rightRef.current.style.transform = `translate3d(${18 * sp}px, ${-40 * sp}px, 0)`
-        rightRef.current.style.opacity = String(leftO)
+      if (right) {
+        right.style.transform = `translate3d(${22 * sp}px, ${-44 * sp}px, 0)`
+        right.style.opacity = String(textO)
       }
-      if (cloudRef.current) {
-        cloudRef.current.style.transform = `translate3d(0, ${cloudY}%, 0)`
+      if (cloud) cloud.style.transform = `translate3d(0, ${cloudY}%, 0)`
+      if (bar) bar.style.transform = `translate3d(0, ${barY}px, 0)`
+
+      for (let i = 0; i < reveals.length; i++) {
+        const t = easeOut(clamp((copyP - i * 0.1) / 0.5))
+        reveals[i].style.opacity = String(t)
+        reveals[i].style.transform = `translate3d(0, ${(1 - t) * 28}px, 0)`
       }
-      if (barRef.current) {
-        barRef.current.style.transform = `translate3d(0, ${barY}px, 0)`
-      }
-      if (copyRef.current) {
-        const items = copyRef.current.querySelectorAll<HTMLElement>('[data-reveal]')
-        items.forEach((el, i) => {
-          const t = easeOut(clamp((copyP - i * 0.1) / 0.5))
-          el.style.opacity = String(t)
-          el.style.transform = `translate3d(0, ${(1 - t) * 28}px, 0)`
-        })
-        copyRef.current.style.pointerEvents = copyP > 0.6 ? 'auto' : 'none'
+      const on = copyP > 0.6
+      if (copy && on !== copyOn) {
+        copyOn = on
+        copy.style.pointerEvents = on ? 'auto' : 'none'
       }
     }
 
-    const tick = () => {
-      // Frame-rate independent-ish smoothing; 0.1 = silkier, 0.2 = snappier.
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05) // clamp so a hitch doesn't teleport
+      last = now
       const diff = target - current
-      current = Math.abs(diff) < 0.0004 ? target : current + diff * 0.16
+      // Exponential smoothing. k=6 silky, k=10 snappier.
+      current = Math.abs(diff) < 0.0003 ? target : current + diff * (1 - Math.exp(-dt * 7))
       apply(current)
 
-      if (current !== target) {
+      if (current !== target && visible) {
         raf = requestAnimationFrame(tick)
       } else {
         running = false
@@ -153,6 +169,7 @@ export function Hero() {
     const kick = () => {
       if (running) return
       running = true
+      last = performance.now()
       raf = requestAnimationFrame(tick)
     }
 
@@ -171,16 +188,31 @@ export function Hero() {
       onScroll()
     }
 
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting
+        if (visible) onScroll()
+      },
+      { rootMargin: '10% 0px' },
+    )
+    io.observe(section)
+
     measure()
     readTarget()
     current = target
     apply(current)
+
+    // Late layout shifts (fonts, images) change the runway; re-measure once they settle.
+    const ro = new ResizeObserver(() => onResize())
+    ro.observe(section)
 
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize)
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
+      io.disconnect()
+      ro.disconnect()
       cancelAnimationFrame(raf)
     }
   }, [])
@@ -192,7 +224,19 @@ export function Hero() {
   }
 
   return (
-    <section ref={sectionRef} className="relative h-[210svh] bg-[#e9f1f7]">
+    <section ref={sectionRef} className="relative h-[300svh] bg-[#e9f1f7]">
+      {/* Idle "in flight" motion. Pure CSS, runs on the compositor, off for reduced motion. */}
+      <style>{`
+        @keyframes jet-hover {
+          0%, 100% { transform: translate3d(0, 0, 0); }
+          50% { transform: translate3d(0, -6px, 0); }
+        }
+        .jet-hover { animation: jet-hover 5.5s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .jet-hover { animation: none; }
+        }
+      `}</style>
+
       <div className="sticky top-0 h-[100svh] p-3 pt-[5.5rem] sm:p-5 sm:pt-[6rem]">
         <div className="relative isolate h-full overflow-hidden rounded-[28px] bg-gradient-to-b from-[#1c6a98] via-[#5fa3c6] to-[#d5e8f2] shadow-[0_30px_80px_rgba(12,45,80,.25)] sm:rounded-[36px]">
           <h1 className="sr-only">Flights, hotels, holiday packages and visa help from Kathmandu — Good Luck International Travels &amp; Tours</h1>
@@ -212,60 +256,73 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Jet: dead center, flies up on scroll */}
+          {/* Jet: scroll drives position/bank/scale; inner wrapper adds idle hover */}
           <div
             ref={jetRef}
             aria-hidden
-            style={{ left: '50%', top: '50%', transform: 'translate3d(-50%, -50%, 0)' }}
-            className="pointer-events-none absolute z-10 w-[min(92vw,78svh)] will-change-transform"
+            style={{ left: '50%', top: '46%', transform: 'translate3d(-50%, -50%, 0)' }}
+            className="pointer-events-none absolute z-10 w-[min(92vw,72svh)] will-change-transform"
           >
-            {missing ? (
-              <JetFallback />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={JET_SRC}
-                alt=""
-                decoding="async"
-                fetchPriority="high"
-                onError={() => setMissing(true)}
-                className="h-auto w-full drop-shadow-[0_40px_50px_rgba(5,25,50,.35)]"
-              />
-            )}
+            <div className="jet-hover relative">
+              {missing ? (
+                <JetFallback />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={JET_SRC}
+                  alt=""
+                  width={1600}
+                  height={1680}
+                  decoding="async"
+                  fetchPriority="high"
+                  draggable={false}
+                  onError={() => setMissing(true)}
+                  className="relative h-auto w-full select-none drop-shadow-[0_40px_50px_rgba(5,25,50,.35)]"
+                />
+              )}
+            </div>
           </div>
 
           {/* Haze at the horizon */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-white/80 to-transparent" />
 
-          {/*
-            Cloud bank: blur-3xl on a moving layer is the biggest jank source, so the
-            soft puffs are radial gradients (cheap) instead of live blur filters.
-          */}
+          {/* Cloud bank: overlapping radial puffs over a gradient body, so there is no hard top edge anywhere */}
           <div
             ref={cloudRef}
             style={{ transform: 'translate3d(0, 100%, 0)' }}
             className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[135%] will-change-transform"
           >
+            {/* Soft body: fades in from transparent, so gaps between puffs never show a line */}
             <div
-              className="absolute -top-24 left-[-12%] h-72 w-[60%]"
-              style={{ background: 'radial-gradient(closest-side, #fff 45%, rgba(255,255,255,0) 100%)' }}
+              className="absolute inset-x-0 top-0 bottom-0"
+              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0, rgba(255,255,255,.55) 90px, #fff 220px)' }}
             />
-            <div
-              className="absolute -top-32 left-[35%] h-80 w-[55%]"
-              style={{ background: 'radial-gradient(closest-side, #fff 45%, rgba(255,255,255,0) 100%)' }}
-            />
-            <div
-              className="absolute -top-24 right-[-12%] h-72 w-[50%]"
-              style={{ background: 'radial-gradient(closest-side, #fff 45%, rgba(255,255,255,0) 100%)' }}
-            />
-            <div className="absolute inset-x-0 top-16 bottom-0 bg-white" />
+            {[
+              { l: '-14%', w: '46%', t: '-6rem', h: '17rem' },
+              { l: '10%', w: '40%', t: '-4rem', h: '15rem' },
+              { l: '30%', w: '44%', t: '-7rem', h: '18rem' },
+              { l: '54%', w: '42%', t: '-4.5rem', h: '16rem' },
+              { l: '76%', w: '46%', t: '-6rem', h: '17rem' },
+            ].map((c, i) => (
+              <div
+                key={i}
+                className="absolute"
+                style={{
+                  left: c.l,
+                  width: c.w,
+                  top: c.t,
+                  height: c.h,
+                  background: 'radial-gradient(closest-side, rgba(255,255,255,.95) 40%, rgba(255,255,255,0) 100%)',
+                }}
+              />
+            ))}
           </div>
 
-          {/* Booking bar: rides up to the top as you scroll (transform only, no layout) */}
+          {/* Booking bar: rides up as you scroll (transform only) */}
           <form
             ref={barRef}
             onSubmit={search}
-            style={{ bottom: '1.5%' }}
+            style={{ bottom: '4.5%' }}
             className="absolute inset-x-3 z-30 mx-auto grid max-w-5xl grid-cols-2 items-center gap-1 rounded-3xl bg-white/90 p-2 shadow-[0_20px_50px_rgba(10,40,70,.25)] backdrop-blur-xl will-change-transform sm:inset-x-6 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]"
           >
             <Field label="From">
@@ -292,7 +349,7 @@ export function Hero() {
             </button>
           </form>
 
-          {/* Second scene, on the clouds: pieces animate in one after another as you scroll */}
+          {/* Second scene, on the clouds */}
           <div
             ref={copyRef}
             style={{ pointerEvents: 'none' }}
